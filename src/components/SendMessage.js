@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { auth, db } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
-const SendMessage = ({ scroll }) => {
-  const [message, setMessage] = useState("");
 
+
+const SendMessage = () => {
+  const [message, setMessage] = useState("");
+  
   const sendMessage = async (event) => {
     event.preventDefault();
-    if (message.trim() === "") {
-      alert("Enter valid message");
+    if (message.trim() === "" || message.length > 128) {
+      alert("Enter valid message");;
       return;
     }
+
     const { uid, displayName, photoURL } = auth.currentUser;
     await addDoc(collection(db, "messages"), {
       text: message,
@@ -20,7 +23,6 @@ const SendMessage = ({ scroll }) => {
       uid,
     });
     setMessage("");
-    scroll.current.scrollIntoView({ behavior: "smooth" });
   };
   return (
     <form onSubmit={(event) => sendMessage(event)} className="send-message">
@@ -32,13 +34,18 @@ const SendMessage = ({ scroll }) => {
         name="messageInput"
         type="text"
         className="form-input__input"
-        placeholder="type message..."
+        placeholder="Type message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
       <button type="submit">Send</button>
+      
     </form>
   );
 };
+
+
+
+
 
 export default SendMessage;
